@@ -1,6 +1,6 @@
 {
   "name": "@erickstryck/simple-vision-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A lightweight MCP server for image analysis using OpenAI-compatible APIs",
   "type": "module",
   "main": "dist/index.js",
