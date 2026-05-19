@@ -1,6 +1,6 @@
 {
   "name": "@erickstryck/simple-vision-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight MCP server for image analysis using OpenAI-compatible APIs",
   "type": "module",
   "main": "dist/index.js",
@@ -14,7 +14,12 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "keywords": ["mcp", "vision", "image-analysis", "openai-compatible"],
+  "keywords": [
+    "mcp",
+    "vision",
+    "image-analysis",
+    "openai-compatible"
+  ],
   "author": "erickstryck <erickstryck@hotmail.com>",
   "license": "MIT",
   "repository": {
