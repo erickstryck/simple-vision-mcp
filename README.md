@@ -30,6 +30,7 @@ Simple Vision MCP addresses these by:
 - **Minimal Dependencies**: Only essential dependencies
 - **STDIO Communication**: Native MCP protocol support
 - **Configurable**: Full control via environment variables
+- **npx Support**: Can run directly with npx, no installation required
 
 ## Installation
 
@@ -38,19 +39,27 @@ Simple Vision MCP addresses these by:
 - Node.js 18 or higher
 - An OpenAI-compatible API endpoint with vision capabilities
 
-### From Source
+### Quick Start with npx (Recommended)
+
+No installation required - just run directly:
 
 ```bash
-git clone https://github.com/yourusername/simple-vision-mcp.git
-cd simple-vision-mcp
-npm install
-npm run build
+npx -y @erickstryck/simple-vision-mcp
 ```
 
 ### Global Installation
 
 ```bash
-npm install -g simple-vision-mcp
+npm install -g @erickstryck/simple-vision-mcp
+```
+
+### From Source
+
+```bash
+git clone https://github.com/erickstryck/simple-vision-mcp.git
+cd simple-vision-mcp
+npm install
+npm run build
 ```
 
 ## Configuration
@@ -80,14 +89,17 @@ VISION_TIMEOUT=120
 ### Running the Server
 
 ```bash
-# Using the built version
+# Using npx (recommended - always gets latest version)
+npx -y @erickstryck/simple-vision-mcp
+
+# Using global installation
+simple-vision-mcp
+
+# From source
 npm start
 
-# Or directly with node
-node dist/index.js
-
-# With environment variables
-VISION_API_KEY=your-key VISION_BASE_URL=https://api.example.com/v1 VISION_MODEL=your-model node dist/index.js
+# With environment variables inline
+VISION_API_KEY=your-key VISION_BASE_URL=https://api.example.com/v1 VISION_MODEL=your-model npx -y @erickstryck/simple-vision-mcp
 ```
 
 ### OpenCode Configuration
@@ -99,7 +111,7 @@ Add to your `opencode.json`:
   "mcp": {
     "vision": {
       "type": "local",
-      "command": ["node", "/path/to/simple-vision-mcp/dist/index.js"],
+      "command": ["npx", "-y", "@erickstryck/simple-vision-mcp"],
       "env": {
         "VISION_API_KEY": "your-api-key",
         "VISION_BASE_URL": "https://your-endpoint.com/api/v1",
@@ -119,8 +131,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "vision": {
-      "command": "node",
-      "args": ["/path/to/simple-vision-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@erickstryck/simple-vision-mcp"],
       "env": {
         "VISION_API_KEY": "your-api-key",
         "VISION_BASE_URL": "https://your-endpoint.com/api/v1",
@@ -139,8 +151,8 @@ Add to your Cursor MCP settings:
 {
   "mcpServers": {
     "vision": {
-      "command": "node",
-      "args": ["/path/to/simple-vision-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@erickstryck/simple-vision-mcp"],
       "env": {
         "VISION_API_KEY": "your-api-key",
         "VISION_BASE_URL": "https://your-endpoint.com/api/v1",
@@ -215,6 +227,8 @@ simple-vision-mcp/
 │   ├── utils/
 │   │   └── imageProcessor.ts # Image processing utilities
 │   └── index.ts              # Main entry point
+├── bin/
+│   └── cli.js                # CLI wrapper
 ├── tests/
 │   ├── config.test.ts
 │   ├── imageProcessor.test.ts
