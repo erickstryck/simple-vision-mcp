@@ -1,9 +1,16 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import { loadConfig } from './config/index.js';
 import { VisionService } from './services/visionService.js';
 import { createAnalyzeImageTool } from './tools/analyzeImage.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
 
 class VisionMCPServer {
   private server: Server;
@@ -16,7 +23,7 @@ class VisionMCPServer {
     this.server = new Server(
       {
         name: 'simple-vision-mcp',
-        version: '1.0.0',
+        version: packageJson.version,
       },
       {
         capabilities: {
