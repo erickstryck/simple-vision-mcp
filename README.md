@@ -73,6 +73,7 @@ Simple Vision MCP is configured entirely via environment variables. Create a `.e
 | `VISION_MODEL` | Model name for vision | Yes | `gpt-4o-mini` |
 | `VISION_MAX_TOKENS` | Max response tokens | No | `4096` |
 | `VISION_TIMEOUT` | Request timeout (seconds) | No | `120` |
+| `VISION_RESIZE` | Resize image before analysis (WxH format, e.g., 1920x1080) | No | - |
 
 ### Example .env File
 
@@ -82,6 +83,7 @@ VISION_BASE_URL=https://your-custom-endpoint.com/api/v1
 VISION_MODEL=Qwen3.5-4B-AWQ
 VISION_MAX_TOKENS=4096
 VISION_TIMEOUT=120
+VISION_RESIZE=1920x1080
 ```
 
 ## Usage
@@ -175,6 +177,8 @@ Analyzes an image and returns a detailed description.
 |-----------|------|-------------|----------|
 | `image_path` | string | Path to the image file | Yes |
 | `prompt` | string | Custom analysis prompt | No |
+| `width` | number | Target width to resize the image before analysis | No |
+| `height` | number | Target height to resize the image before analysis | No |
 
 **Default Prompt:** "Describe this image in detail, including objects, text, colors, composition, and any notable features."
 

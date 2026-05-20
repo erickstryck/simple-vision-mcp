@@ -1,15 +1,27 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { writeFileSync, unlinkSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import sharp from 'sharp';
 import { imagePathToData, imageDataToDataUrl, getMimeType, isValidImageFormat } from '../src/utils/imageProcessor.js';
+import { SharpImageResizer, ResizeOptions } from '../src/utils/imageResizer.js';
 
 describe('ImageProcessor', () => {
   const testDir = '/tmp/simple-vision-mcp-tests';
+  const resizer = new SharpImageResizer();
+  let validPngBuffer: Buffer;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     if (!existsSync(testDir)) {
       mkdirSync(testDir, { recursive: true });
     }
+    validPngBuffer = await sharp({
+      create: {
+        width: 200,
+        height: 200,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 }
+      }
+    }).png().toBuffer();
   });
 
   describe('getMimeType', () => {
@@ -53,31 +65,55 @@ describe('ImageProcessor', () => {
   });
 
   describe('imagePathToData', () => {
-    it('should convert png file to base64 data', () => {
+    it('should convert png file to base64 data', async () => {
       const testFile = join(testDir, 'test.png');
-      const pngData = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-      writeFileSync(testFile, pngData);
+      writeFileSync(testFile, validPngBuffer);
 
-      const result = imagePathToData(testFile);
+      const result = await imagePathToData(testFile);
 
       expect(result.mimeType).toBe('image/png');
-      expect(result.base64).toBe(pngData.toString('base64'));
+      expect(result.base64).toBe(validPngBuffer.toString('base64'));
       expect(result.filename).toBe('test.png');
 
       unlinkSync(testFile);
     });
 
-    it('should throw error for unsupported format', () => {
+    it('should throw error for unsupported format', async () => {
       const testFile = join(testDir, 'test.pdf');
       writeFileSync(testFile, Buffer.from('test'));
 
-      expect(() => imagePathToData(testFile)).toThrow('Unsupported image format: .pdf');
+      await expect(imagePathToData(testFile)).rejects.toThrow('Unsupported image format: .pdf');
 
       unlinkSync(testFile);
     });
 
-    it('should throw error for non-existent file', () => {
-      expect(() => imagePathToData('/non/existent/file.png')).toThrow();
+    it('should throw error for non-existent file', async () => {
+      await expect(imagePathToData('/non/existent/file.png')).rejects.toThrow();
+    });
+
+    it('should resize image when resize options are provided', async () => {
+      const testFile = join(testDir, 'test.png');
+      writeFileSync(testFile, validPngBuffer);
+
+      const resizeOptions: ResizeOptions = { width: 100, height: 100 };
+      const result = await imagePathToData(testFile, resizeOptions, resizer);
+
+      expect(result.mimeType).toBe('image/png');
+      expect(result.filename).toBe('test.png');
+      expect(result.base64.length).toBeGreaterThan(0);
+
+      unlinkSync(testFile);
+    });
+
+    it('should not resize when no resize options provided', async () => {
+      const testFile = join(testDir, 'test.png');
+      writeFileSync(testFile, validPngBuffer);
+
+      const result = await imagePathToData(testFile, undefined, resizer);
+
+      expect(result.base64).toBe(validPngBuffer.toString('base64'));
+
+      unlinkSync(testFile);
     });
   });
 
