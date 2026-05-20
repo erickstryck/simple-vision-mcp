@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { extname, basename } from 'path';
+import { ImageResizer, ResizeOptions } from './imageResizer.js';
 
 export interface ImageData {
   base64: string;
@@ -26,12 +27,17 @@ export function isValidImageFormat(filePath: string): boolean {
   return ext in MIME_TYPES;
 }
 
-export function imagePathToData(filePath: string): ImageData {
+export async function imagePathToData(filePath: string, resizeOptions?: ResizeOptions, imageResizer?: ImageResizer): Promise<ImageData> {
   if (!isValidImageFormat(filePath)) {
     throw new Error(`Unsupported image format: ${extname(filePath)}`);
   }
 
-  const imageBuffer = readFileSync(filePath);
+  let imageBuffer: Buffer = readFileSync(filePath);
+
+  if (resizeOptions && imageResizer && (resizeOptions.width || resizeOptions.height)) {
+    imageBuffer = await imageResizer.resize(imageBuffer, resizeOptions);
+  }
+
   const base64 = imageBuffer.toString('base64');
   const mimeType = getMimeType(filePath);
   const filename = basename(filePath);

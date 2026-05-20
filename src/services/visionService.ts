@@ -1,9 +1,11 @@
 import { ServerConfig } from '../config/index.js';
+import { ResizeOptions } from '../utils/imageResizer.js';
 
 export interface VisionRequest {
   imageDataUrl: string;
   prompt: string;
   maxTokens: number;
+  resizeOptions?: ResizeOptions;
 }
 
 export interface VisionResponse {

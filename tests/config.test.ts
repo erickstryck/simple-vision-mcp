@@ -60,4 +60,43 @@ describe('Config', () => {
     expect(config.baseUrl).toBe('https://openai.com/v1');
     expect(config.model).toBe('gpt-4o');
   });
+
+  it('should load resize config from environment variables', () => {
+    process.env.VISION_API_KEY = 'test-key';
+    process.env.VISION_RESIZE = '1920x1080';
+
+    const config = loadConfig();
+
+    expect(config.resize).toBeDefined();
+    expect(config.resize?.width).toBe(1920);
+    expect(config.resize?.height).toBe(1080);
+  });
+
+  it('should load resize config with different dimensions', () => {
+    process.env.VISION_API_KEY = 'test-key';
+    process.env.VISION_RESIZE = '800x600';
+
+    const config = loadConfig();
+
+    expect(config.resize).toBeDefined();
+    expect(config.resize?.width).toBe(800);
+    expect(config.resize?.height).toBe(600);
+  });
+
+  it('should not include resize when VISION_RESIZE is not set', () => {
+    process.env.VISION_API_KEY = 'test-key';
+
+    const config = loadConfig();
+
+    expect(config.resize).toBeUndefined();
+  });
+
+  it('should not include resize when VISION_RESIZE has invalid format', () => {
+    process.env.VISION_API_KEY = 'test-key';
+    process.env.VISION_RESIZE = 'invalid';
+
+    const config = loadConfig();
+
+    expect(config.resize).toBeUndefined();
+  });
 });
