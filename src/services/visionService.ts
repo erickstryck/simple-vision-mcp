@@ -1,11 +1,9 @@
-import { ServerConfig } from '../config/index.js';
-import { ResizeOptions } from '../utils/imageResizer.js';
+import { ServerConfig, ResizeConfig } from '../config/index.js';
 
 export interface VisionRequest {
   imageDataUrl: string;
   prompt: string;
   maxTokens: number;
-  resizeOptions?: ResizeOptions;
 }
 
 export interface VisionResponse {
@@ -20,7 +18,7 @@ export interface VisionResponse {
 export class VisionService {
   constructor(private readonly config: ServerConfig) {}
 
-  getResizeConfig(): ResizeOptions | undefined {
+  getResizeConfig(): ResizeConfig | undefined {
     return this.config.resize;
   }
 
