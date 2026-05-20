@@ -10,6 +10,8 @@ export interface AnalyzeImageParams {
 }
 
 export function createAnalyzeImageTool(visionService: VisionService) {
+  const serverResize = visionService.getResizeConfig();
+
   return {
     name: 'analyze_image',
     description: 'Analyzes an image and returns a detailed description. Supports PNG, JPEG, GIF, WebP, and BMP formats.',
@@ -39,7 +41,10 @@ export function createAnalyzeImageTool(visionService: VisionService) {
     handler: async (params: AnalyzeImageParams) => {
       const { image_path, prompt, width, height } = params;
 
-      const resizeOptions: ResizeOptions | undefined = (width || height) ? { width, height } : undefined;
+      const resizeOptions: ResizeOptions | undefined = (width || height)
+        ? { width, height }
+        : serverResize;
+
       const imageData = await imagePathToData(image_path, resizeOptions, imageResizer);
       const imageDataUrl = imageDataToDataUrl(imageData);
 

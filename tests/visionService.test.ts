@@ -74,4 +74,38 @@ describe('VisionService', () => {
 
     expect(result.content).toBe('');
   });
+
+  describe('getResizeConfig', () => {
+    it('should return undefined when no resize config is set', () => {
+      const service = new VisionService(mockConfig);
+      expect(service.getResizeConfig()).toBeUndefined();
+    });
+
+    it('should return resize config when set', () => {
+      const configWithResize: ServerConfig = {
+        ...mockConfig,
+        resize: { width: 1280, height: 720 },
+      };
+      const service = new VisionService(configWithResize);
+      expect(service.getResizeConfig()).toEqual({ width: 1280, height: 720 });
+    });
+
+    it('should return resize config with only width', () => {
+      const configWithResize: ServerConfig = {
+        ...mockConfig,
+        resize: { width: 1024 },
+      };
+      const service = new VisionService(configWithResize);
+      expect(service.getResizeConfig()).toEqual({ width: 1024 });
+    });
+
+    it('should return resize config with only height', () => {
+      const configWithResize: ServerConfig = {
+        ...mockConfig,
+        resize: { height: 768 },
+      };
+      const service = new VisionService(configWithResize);
+      expect(service.getResizeConfig()).toEqual({ height: 768 });
+    });
+  });
 });

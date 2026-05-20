@@ -20,6 +20,10 @@ export interface VisionResponse {
 export class VisionService {
   constructor(private readonly config: ServerConfig) {}
 
+  getResizeConfig(): ResizeOptions | undefined {
+    return this.config.resize;
+  }
+
   async analyze(request: VisionRequest): Promise<VisionResponse> {
     const { imageDataUrl, prompt, maxTokens } = request;
 
