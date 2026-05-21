@@ -1,4 +1,5 @@
 import { ServerConfig, ResizeConfig } from '../config/index.js';
+import { withTimeout } from '../utils/withTimeout.js';
 
 export interface VisionRequest {
   imageDataUrl: string;
@@ -25,26 +26,30 @@ export class VisionService {
   async analyze(request: VisionRequest): Promise<VisionResponse> {
     const { imageDataUrl, prompt, maxTokens } = request;
 
-    const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: this.config.model,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: imageDataUrl } },
-            ],
-          },
-        ],
-        max_tokens: maxTokens,
+    const response = await withTimeout(
+      fetch(`${this.config.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.config.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: imageDataUrl } },
+              ],
+            },
+          ],
+          max_tokens: maxTokens,
+        }),
       }),
-    });
+      this.config.timeout * 1000,
+      'Vision API'
+    );
 
     if (!response.ok) {
       const errorBody = await response.text();
