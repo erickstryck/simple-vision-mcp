@@ -15,7 +15,8 @@ export class SharpImageResizer implements ImageResizer {
 
     if (options.width || options.height) {
       pipeline = pipeline.resize(options.width, options.height, {
-        fit: 'fill',
+        fit: 'inside',
+        withoutEnlargement: true,
       });
     }
 

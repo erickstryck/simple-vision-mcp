@@ -15,10 +15,12 @@ const packageJson = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'
 class VisionMCPServer {
   private server: Server;
   private visionService: VisionService;
+  private analyzeImageTool: ReturnType<typeof createAnalyzeImageTool>;
 
   constructor() {
     const config = loadConfig();
     this.visionService = new VisionService(config);
+    this.analyzeImageTool = createAnalyzeImageTool(this.visionService);
 
     this.server = new Server(
       {
@@ -37,15 +39,14 @@ class VisionMCPServer {
 
   private setupHandlers(): void {
     this.server.setRequestHandler(ListToolsRequestSchema, () => ({
-      tools: [createAnalyzeImageTool(this.visionService)],
+      tools: [this.analyzeImageTool],
     }));
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
 
       if (name === 'analyze_image') {
-        const tool = createAnalyzeImageTool(this.visionService);
-        return await tool.handler(args as { image_path: string; prompt?: string });
+        return await this.analyzeImageTool.handler(args as { image_path: string; prompt?: string });
       }
 
       throw new Error(`Unknown tool: ${name}`);

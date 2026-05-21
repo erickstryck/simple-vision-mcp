@@ -31,7 +31,7 @@ export class VisionService {
     const { imageDataUrl, prompt, maxTokens } = request;
 
     const response = await withTimeout(
-      fetch(`${this.config.baseUrl}/chat/completions`, {
+      fetch(`${this.config.baseUrl}${this.config.apiPath}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

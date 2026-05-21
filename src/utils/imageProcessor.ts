@@ -1,5 +1,6 @@
-import { readFileSync } from 'fs';
+import { readFile, access } from 'fs/promises';
 import { extname, basename } from 'path';
+import { constants } from 'fs';
 import { ImageResizer, ResizeOptions } from './imageResizer.js';
 
 export interface ImageData {
@@ -32,7 +33,13 @@ export async function imagePathToData(filePath: string, resizeOptions?: ResizeOp
     throw new Error(`Unsupported image format: ${extname(filePath)}`);
   }
 
-  let imageBuffer: Buffer = readFileSync(filePath);
+  try {
+    await access(filePath, constants.R_OK);
+  } catch {
+    throw new Error(`File not found or not readable: ${filePath}`);
+  }
+
+  let imageBuffer: Buffer = await readFile(filePath);
 
   if (resizeOptions && imageResizer && (resizeOptions.width || resizeOptions.height)) {
     imageBuffer = await imageResizer.resize(imageBuffer, resizeOptions);
