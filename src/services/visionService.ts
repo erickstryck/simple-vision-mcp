@@ -23,6 +23,10 @@ export class VisionService {
     return this.config.resize;
   }
 
+  getMaxTokens(): number {
+    return this.config.maxTokens;
+  }
+
   async analyze(request: VisionRequest): Promise<VisionResponse> {
     const { imageDataUrl, prompt, maxTokens } = request;
 

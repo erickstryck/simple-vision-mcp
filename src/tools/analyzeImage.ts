@@ -51,7 +51,7 @@ export function createAnalyzeImageTool(visionService: VisionService) {
       const result = await visionService.analyze({
         imageDataUrl,
         prompt: prompt || 'Describe this image in detail, including objects, text, colors, composition, and any notable features.',
-        maxTokens: 4096,
+        maxTokens: visionService.getMaxTokens(),
       });
 
       return {
